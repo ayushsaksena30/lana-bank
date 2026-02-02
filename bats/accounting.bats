@@ -128,6 +128,60 @@ teardown_file() {
   [[ "$retained_earnings_loss_code" == "32.02" ]] || exit 1
 }
 
+@test "accounting: can query asset account sets" {
+  exec_admin_graphql 'asset-account-sets'
+  count=$(graphql_output '.data.assetAccountSets | length')
+  [[ "$count" -gt 0 ]] || exit 1
+
+  first_code=$(graphql_output '.data.assetAccountSets[0].code')
+  [[ "$first_code" =~ ^1 ]] || exit 1
+}
+
+@test "accounting: can query liability account sets" {
+  exec_admin_graphql 'liability-account-sets'
+  count=$(graphql_output '.data.liabilityAccountSets | length')
+  [[ "$count" -gt 0 ]] || exit 1
+
+  first_code=$(graphql_output '.data.liabilityAccountSets[0].code')
+  [[ "$first_code" =~ ^2 ]] || exit 1
+}
+
+@test "accounting: can query equity account sets" {
+  exec_admin_graphql 'equity-account-sets'
+  count=$(graphql_output '.data.equityAccountSets | length')
+  [[ "$count" -gt 0 ]] || exit 1
+
+  first_code=$(graphql_output '.data.equityAccountSets[0].code')
+  [[ "$first_code" =~ ^3 ]] || exit 1
+}
+
+@test "accounting: can query revenue account sets" {
+  exec_admin_graphql 'revenue-account-sets'
+  count=$(graphql_output '.data.revenueAccountSets | length')
+  [[ "$count" -gt 0 ]] || exit 1
+
+  first_code=$(graphql_output '.data.revenueAccountSets[0].code')
+  [[ "$first_code" =~ ^4 ]] || exit 1
+}
+
+@test "accounting: can query cost of revenue account sets" {
+  exec_admin_graphql 'cost-of-revenue-account-sets'
+  count=$(graphql_output '.data.costOfRevenueAccountSets | length')
+  [[ "$count" -gt 0 ]] || exit 1
+
+  first_code=$(graphql_output '.data.costOfRevenueAccountSets[0].code')
+  [[ "$first_code" =~ ^5 ]] || exit 1
+}
+
+@test "accounting: can query expense account sets" {
+  exec_admin_graphql 'expense-account-sets'
+  count=$(graphql_output '.data.expenseAccountSets | length')
+  [[ "$count" -gt 0 ]] || exit 1
+
+  first_code=$(graphql_output '.data.expenseAccountSets[0].code')
+  [[ "$first_code" =~ ^6 ]] || exit 1
+}
+
 @test "accounting: can import CSV file into chart of accounts" {
   exec_admin_graphql 'chart-of-accounts'
   chart_id=$(graphql_output '.data.chartOfAccounts.chartId')
