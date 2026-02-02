@@ -129,13 +129,27 @@ teardown_file() {
 }
 
 @test "accounting: can query account sets by category" {
-  # Test ASSET category
-  exec_admin_graphql 'account-sets-by-category' '{"category": "ASSET"}'
+  # Test ASSET category - use raw curl to capture all output
+  local query=$(cat "${BATS_TEST_DIRNAME}/admin-gql/account-sets-by-category.gql")
+  local payload=$(jq -n --arg q "$query" --arg v '{"category": "ASSET"}' '{query: $q, variables: ($v | fromjson)}')
+  local token=$(read_value "superadmin")
 
-  # Debug output to see what's returned
-  echo "Full response: $output" >&3
-  echo "accountSetsByCategory data: $(graphql_output '.data.accountSetsByCategory')" >&3
-  echo "errors: $(graphql_output '.errors')" >&3
+  echo "Token present: $([ -n \"$token\" ] && echo yes || echo no)" >&3
+  echo "GQL endpoint: ${GQL_ADMIN_ENDPOINT:-not set}" >&3
+
+  # Run curl with verbose output to see what's happening
+  run curl -v -s -X POST \
+    -H "Authorization: Bearer $token" \
+    -H "Content-Type: application/json" \
+    -d "$payload" \
+    "${GQL_ADMIN_ENDPOINT}" 2>&1
+
+  echo "curl exit status: $status" >&3
+  echo "curl output: $output" >&3
+
+  # Now use the normal flow
+  exec_admin_graphql 'account-sets-by-category' '{"category": "ASSET"}'
+  echo "GraphQL output: $output" >&3
 
   count=$(graphql_output '.data.accountSetsByCategory | length')
   echo "count: $count" >&3
