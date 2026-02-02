@@ -553,12 +553,12 @@ where
         let base_config = chart
             .accounting_base_config()
             .ok_or(ChartOfAccountsError::BaseConfigNotInitialized)?;
-        let code = base_config
-            .code_for_category(category)
-            .ok_or(ChartOfAccountsError::InvalidAccountCategory {
+        let code = base_config.code_for_category(category).ok_or(
+            ChartOfAccountsError::InvalidAccountCategory {
                 code: "".parse().unwrap(),
                 category,
-            })?;
+            },
+        )?;
         Ok(chart.account_sets_under_code(code))
     }
 }

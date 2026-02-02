@@ -570,9 +570,7 @@ impl AccountingBaseConfig {
             AccountCategory::Liability => self.is_liabilities_account_set_or_account(code),
             AccountCategory::Equity => self.is_equity_account_set_or_account(code),
             AccountCategory::Revenue => self.is_revenue_account_set_or_account(code),
-            AccountCategory::CostOfRevenue => {
-                self.is_cost_of_revenue_account_set_or_account(code)
-            }
+            AccountCategory::CostOfRevenue => self.is_cost_of_revenue_account_set_or_account(code),
             AccountCategory::Expenses => self.is_expenses_account_set_or_account(code),
         }
     }
