@@ -40,6 +40,13 @@ export type Scalars = {
   UsdCents: { input: UsdCents; output: UsdCents; }
 };
 
+export type AccountSetMember = {
+  __typename?: 'AccountSetMember';
+  accountSetId: Scalars['UUID']['output'];
+  code: Scalars['AccountCode']['output'];
+  name: Scalars['String']['output'];
+};
+
 export type AccountingBaseConfigInput = {
   assetsCode: Scalars['String']['input'];
   costOfRevenueCode: Scalars['String']['input'];
@@ -2415,11 +2422,13 @@ export type Query = {
   accountEntryCsv?: Maybe<AccountingCsvDocument>;
   approvalProcess?: Maybe<ApprovalProcess>;
   approvalProcesses: ApprovalProcessConnection;
+  assetAccountSets: Array<AccountSetMember>;
   audit: AuditEntryConnection;
   balanceSheet: BalanceSheet;
   chartOfAccounts: ChartOfAccounts;
   committee?: Maybe<Committee>;
   committees: CommitteeConnection;
+  costOfRevenueAccountSets: Array<AccountSetMember>;
   creditConfig?: Maybe<CreditModuleConfig>;
   creditFacilities: CreditFacilityConnection;
   creditFacility?: Maybe<CreditFacility>;
@@ -2444,6 +2453,8 @@ export type Query = {
   disbursalByPublicId?: Maybe<CreditFacilityDisbursal>;
   disbursals: CreditFacilityDisbursalConnection;
   domainConfigs: DomainConfigConnection;
+  equityAccountSets: Array<AccountSetMember>;
+  expenseAccountSets: Array<AccountSetMember>;
   fiscalYear?: Maybe<FiscalYear>;
   fiscalYearByYear?: Maybe<FiscalYear>;
   fiscalYears: FiscalYearConnection;
@@ -2452,6 +2463,7 @@ export type Query = {
   ledgerAccountByCode?: Maybe<LedgerAccount>;
   ledgerTransaction?: Maybe<LedgerTransaction>;
   ledgerTransactionsForTemplateCode: LedgerTransactionConnection;
+  liabilityAccountSets: Array<AccountSetMember>;
   liquidation?: Maybe<Liquidation>;
   liquidations: LiquidationConnection;
   loanAgreement?: Maybe<LoanAgreement>;
@@ -2466,6 +2478,7 @@ export type Query = {
   realtimePrice: RealtimePrice;
   reportRun?: Maybe<ReportRun>;
   reportRuns: ReportRunConnection;
+  revenueAccountSets: Array<AccountSetMember>;
   role?: Maybe<Role>;
   roles: RoleConnection;
   termsTemplate?: Maybe<TermsTemplate>;
