@@ -131,7 +131,14 @@ teardown_file() {
 @test "accounting: can query account sets by category" {
   # Test ASSET category
   exec_admin_graphql 'account-sets-by-category' '{"category": "ASSET"}'
+
+  # Debug output to see what's returned
+  echo "Full response: $output" >&3
+  echo "accountSetsByCategory data: $(graphql_output '.data.accountSetsByCategory')" >&3
+  echo "errors: $(graphql_output '.errors')" >&3
+
   count=$(graphql_output '.data.accountSetsByCategory | length')
+  echo "count: $count" >&3
   [[ "$count" -gt 0 ]] || exit 1
   first_code=$(graphql_output '.data.accountSetsByCategory[0].code')
   [[ "$first_code" =~ ^1 ]] || exit 1
