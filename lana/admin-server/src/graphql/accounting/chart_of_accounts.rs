@@ -2,7 +2,7 @@ use async_graphql::*;
 
 use crate::{graphql::accounting::AccountCode, primitives::*};
 
-use lana_app::accounting::Chart as DomainChart;
+use lana_app::accounting::{AccountSetMember as DomainAccountSetMember, Chart as DomainChart};
 use lana_app::primitives::{AccountingBaseConfig, DebitOrCredit};
 
 #[derive(SimpleObject, Clone)]
@@ -172,3 +172,20 @@ pub struct ChartOfAccountsCsvImportInput {
 }
 
 crate::mutation_payload! { ChartOfAccountsCsvImportPayload, chart_of_accounts: ChartOfAccounts }
+
+#[derive(SimpleObject, Clone)]
+pub struct AccountSetMember {
+    pub account_set_id: UUID,
+    pub code: AccountCode,
+    pub name: String,
+}
+
+impl From<DomainAccountSetMember> for AccountSetMember {
+    fn from(member: DomainAccountSetMember) -> Self {
+        Self {
+            account_set_id: UUID::from(member.account_set_id),
+            code: AccountCode::from(&member.code),
+            name: member.name.to_string(),
+        }
+    }
+}

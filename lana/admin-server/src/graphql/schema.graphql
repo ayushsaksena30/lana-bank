@@ -1,5 +1,11 @@
 scalar AccountCode
 
+type AccountSetMember {
+	accountSetId: UUID!
+	code: AccountCode!
+	name: String!
+}
+
 input AccountingBaseConfigInput {
 	assetsCode: String!
 	liabilitiesCode: String!
@@ -2190,6 +2196,12 @@ type Query {
 	journalEntries(first: Int!, after: String): JournalEntryConnection!
 	trialBalance(from: Date!, until: Date!): TrialBalance!
 	chartOfAccounts: ChartOfAccounts!
+	assetAccountSets: [AccountSetMember!]!
+	liabilityAccountSets: [AccountSetMember!]!
+	equityAccountSets: [AccountSetMember!]!
+	revenueAccountSets: [AccountSetMember!]!
+	costOfRevenueAccountSets: [AccountSetMember!]!
+	expenseAccountSets: [AccountSetMember!]!
 	fiscalYear(fiscalYearId: UUID!): FiscalYear
 	fiscalYearByYear(year: String!): FiscalYear
 	fiscalYears(first: Int!, after: String): FiscalYearConnection!
