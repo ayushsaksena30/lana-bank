@@ -350,26 +350,9 @@ impl Chart {
         tree::project_from_nodes(self.id, &self.name, self.chart_nodes.iter_persisted())
     }
 
-    /// Returns all descendant account sets (non-leaf nodes) under the given category code
     pub fn account_sets_under_code(&self, code: &AccountCode) -> Vec<AccountSetMember> {
-        let tree = self.chart();
-
-        fn find_node<'a>(
-            nodes: &'a [tree::TreeNode],
-            code: &AccountCode,
-        ) -> Option<&'a tree::TreeNode> {
-            for node in nodes {
-                if &node.code == code {
-                    return Some(node);
-                }
-                if let Some(found) = find_node(&node.children, code) {
-                    return Some(found);
-                }
-            }
-            None
-        }
-
-        find_node(&tree.children, code)
+        self.chart()
+            .find_node_by_code(code)
             .map(|node| {
                 node.descendant_account_sets()
                     .into_iter()

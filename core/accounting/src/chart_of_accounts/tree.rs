@@ -14,6 +14,14 @@ pub struct ChartTree {
     pub children: Vec<TreeNode>,
 }
 
+impl ChartTree {
+    pub fn find_node_by_code(&self, code: &AccountCode) -> Option<&TreeNode> {
+        self.children
+            .iter()
+            .find_map(|child| child.find_by_code(code))
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct TreeNode {
     pub id: CalaAccountSetId,
@@ -24,7 +32,15 @@ pub struct TreeNode {
 }
 
 impl TreeNode {
-    // returns the ids of all the descendants of the node
+    pub fn find_by_code(&self, code: &AccountCode) -> Option<&TreeNode> {
+        if &self.code == code {
+            return Some(self);
+        }
+        self.children
+            .iter()
+            .find_map(|child| child.find_by_code(code))
+    }
+
     pub fn descendants(&self) -> Vec<CalaAccountSetId> {
         let mut result = Vec::new();
         let mut stack: Vec<&TreeNode> = self.children.iter().rev().collect();
