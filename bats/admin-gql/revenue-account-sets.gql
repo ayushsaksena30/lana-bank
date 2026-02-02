@@ -1,7 +1,0 @@
-query RevenueAccountSets {
-  revenueAccountSets {
-    accountSetId
-    code
-    name
-  }
-}

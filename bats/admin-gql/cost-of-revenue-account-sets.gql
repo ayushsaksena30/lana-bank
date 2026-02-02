@@ -1,7 +1,0 @@
-query CostOfRevenueAccountSets {
-  costOfRevenueAccountSets {
-    accountSetId
-    code
-    name
-  }
-}

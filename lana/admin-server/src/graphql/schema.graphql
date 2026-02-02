@@ -1,3 +1,12 @@
+enum AccountCategory {
+	ASSET
+	LIABILITY
+	EQUITY
+	REVENUE
+	COST_OF_REVENUE
+	EXPENSES
+}
+
 scalar AccountCode
 
 type AccountSetMember {
@@ -2196,12 +2205,7 @@ type Query {
 	journalEntries(first: Int!, after: String): JournalEntryConnection!
 	trialBalance(from: Date!, until: Date!): TrialBalance!
 	chartOfAccounts: ChartOfAccounts!
-	assetAccountSets: [AccountSetMember!]!
-	liabilityAccountSets: [AccountSetMember!]!
-	equityAccountSets: [AccountSetMember!]!
-	revenueAccountSets: [AccountSetMember!]!
-	costOfRevenueAccountSets: [AccountSetMember!]!
-	expenseAccountSets: [AccountSetMember!]!
+	accountSetsByCategory(category: AccountCategory!): [AccountSetMember!]!
 	fiscalYear(fiscalYearId: UUID!): FiscalYear
 	fiscalYearByYear(year: String!): FiscalYear
 	fiscalYears(first: Int!, after: String): FiscalYearConnection!

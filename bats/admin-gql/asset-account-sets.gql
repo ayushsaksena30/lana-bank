@@ -1,7 +1,0 @@
-query AssetAccountSets {
-  assetAccountSets {
-    accountSetId
-    code
-    name
-  }
-}

@@ -1,7 +1,0 @@
-query EquityAccountSets {
-  equityAccountSets {
-    accountSetId
-    code
-    name
-  }
-}

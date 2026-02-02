@@ -553,6 +553,14 @@ impl AccountingBaseConfig {
         self.revenue_code == *code || self.revenue_code.is_parent_of(&code.sections)
     }
 
+    pub fn is_cost_of_revenue_account_set_or_account(&self, code: &AccountCode) -> bool {
+        self.cost_of_revenue_code == *code || self.cost_of_revenue_code.is_parent_of(&code.sections)
+    }
+
+    pub fn is_expenses_account_set_or_account(&self, code: &AccountCode) -> bool {
+        self.expenses_code == *code || self.expenses_code.is_parent_of(&code.sections)
+    }
+
     pub fn is_account_in_category(&self, code: &AccountCode, category: AccountCategory) -> bool {
         match category {
             AccountCategory::OffBalanceSheet => {
@@ -562,17 +570,39 @@ impl AccountingBaseConfig {
             AccountCategory::Liability => self.is_liabilities_account_set_or_account(code),
             AccountCategory::Equity => self.is_equity_account_set_or_account(code),
             AccountCategory::Revenue => self.is_revenue_account_set_or_account(code),
+            AccountCategory::CostOfRevenue => {
+                self.is_cost_of_revenue_account_set_or_account(code)
+            }
+            AccountCategory::Expenses => self.is_expenses_account_set_or_account(code),
+        }
+    }
+
+    pub fn code_for_category(&self, category: AccountCategory) -> Option<&AccountCode> {
+        match category {
+            AccountCategory::OffBalanceSheet => None,
+            AccountCategory::Asset => Some(&self.assets_code),
+            AccountCategory::Liability => Some(&self.liabilities_code),
+            AccountCategory::Equity => Some(&self.equity_code),
+            AccountCategory::Revenue => Some(&self.revenue_code),
+            AccountCategory::CostOfRevenue => Some(&self.cost_of_revenue_code),
+            AccountCategory::Expenses => Some(&self.expenses_code),
         }
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, strum::Display, strum::EnumString,
+)]
+#[strum(serialize_all = "snake_case")]
+#[serde(rename_all = "snake_case")]
 pub enum AccountCategory {
     OffBalanceSheet,
     Asset,
     Liability,
     Equity,
     Revenue,
+    CostOfRevenue,
+    Expenses,
 }
 
 #[derive(Debug, Clone)]

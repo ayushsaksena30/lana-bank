@@ -40,6 +40,15 @@ export type Scalars = {
   UsdCents: { input: UsdCents; output: UsdCents; }
 };
 
+export enum AccountCategory {
+  Asset = 'ASSET',
+  CostOfRevenue = 'COST_OF_REVENUE',
+  Equity = 'EQUITY',
+  Expenses = 'EXPENSES',
+  Liability = 'LIABILITY',
+  Revenue = 'REVENUE'
+}
+
 export type AccountSetMember = {
   __typename?: 'AccountSetMember';
   accountSetId: Scalars['UUID']['output'];
@@ -2420,15 +2429,14 @@ export type PublicIdTarget = CreditFacility | CreditFacilityDisbursal | Customer
 export type Query = {
   __typename?: 'Query';
   accountEntryCsv?: Maybe<AccountingCsvDocument>;
+  accountSetsByCategory: Array<AccountSetMember>;
   approvalProcess?: Maybe<ApprovalProcess>;
   approvalProcesses: ApprovalProcessConnection;
-  assetAccountSets: Array<AccountSetMember>;
   audit: AuditEntryConnection;
   balanceSheet: BalanceSheet;
   chartOfAccounts: ChartOfAccounts;
   committee?: Maybe<Committee>;
   committees: CommitteeConnection;
-  costOfRevenueAccountSets: Array<AccountSetMember>;
   creditConfig?: Maybe<CreditModuleConfig>;
   creditFacilities: CreditFacilityConnection;
   creditFacility?: Maybe<CreditFacility>;
@@ -2453,8 +2461,6 @@ export type Query = {
   disbursalByPublicId?: Maybe<CreditFacilityDisbursal>;
   disbursals: CreditFacilityDisbursalConnection;
   domainConfigs: DomainConfigConnection;
-  equityAccountSets: Array<AccountSetMember>;
-  expenseAccountSets: Array<AccountSetMember>;
   fiscalYear?: Maybe<FiscalYear>;
   fiscalYearByYear?: Maybe<FiscalYear>;
   fiscalYears: FiscalYearConnection;
@@ -2463,7 +2469,6 @@ export type Query = {
   ledgerAccountByCode?: Maybe<LedgerAccount>;
   ledgerTransaction?: Maybe<LedgerTransaction>;
   ledgerTransactionsForTemplateCode: LedgerTransactionConnection;
-  liabilityAccountSets: Array<AccountSetMember>;
   liquidation?: Maybe<Liquidation>;
   liquidations: LiquidationConnection;
   loanAgreement?: Maybe<LoanAgreement>;
@@ -2478,7 +2483,6 @@ export type Query = {
   realtimePrice: RealtimePrice;
   reportRun?: Maybe<ReportRun>;
   reportRuns: ReportRunConnection;
-  revenueAccountSets: Array<AccountSetMember>;
   role?: Maybe<Role>;
   roles: RoleConnection;
   termsTemplate?: Maybe<TermsTemplate>;
@@ -2495,6 +2499,11 @@ export type Query = {
 
 export type QueryAccountEntryCsvArgs = {
   ledgerAccountId: Scalars['UUID']['input'];
+};
+
+
+export type QueryAccountSetsByCategoryArgs = {
+  category: AccountCategory;
 };
 
 

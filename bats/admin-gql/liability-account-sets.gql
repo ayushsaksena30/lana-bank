@@ -1,7 +1,0 @@
-query LiabilityAccountSets {
-  liabilityAccountSets {
-    accountSetId
-    code
-    name
-  }
-}

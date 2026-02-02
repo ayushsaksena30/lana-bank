@@ -18,9 +18,10 @@ use tracing_macros::record_error_severity;
 use cala_ledger::{CalaLedger, account::Account};
 
 use crate::primitives::{
-    AccountCode, AccountIdOrCode, AccountName, AccountSetMember, AccountSpec, AccountingBaseConfig,
-    CalaAccountSetId, CalaJournalId, ChartId, ClockHandle, ClosingAccountCodes, ClosingTxDetails,
-    CoreAccountingAction, CoreAccountingObject, LedgerAccountId,
+    AccountCategory, AccountCode, AccountIdOrCode, AccountName, AccountSetMember, AccountSpec,
+    AccountingBaseConfig, CalaAccountSetId, CalaJournalId, ChartId, ClockHandle,
+    ClosingAccountCodes, ClosingTxDetails, CoreAccountingAction, CoreAccountingObject,
+    LedgerAccountId,
 };
 
 use bulk_import::BulkImportResult;
@@ -532,13 +533,14 @@ where
     }
 
     #[instrument(
-        name = "core_accounting.chart_of_accounts.asset_account_sets",
+        name = "core_accounting.chart_of_accounts.account_sets_by_category",
         skip(self)
     )]
-    pub async fn asset_account_sets(
+    pub async fn account_sets_by_category(
         &self,
         sub: &<<Perms as PermissionCheck>::Audit as AuditSvc>::Subject,
         chart_ref: &str,
+        category: AccountCategory,
     ) -> Result<Vec<AccountSetMember>, ChartOfAccountsError> {
         self.authz
             .enforce_permission(
@@ -551,121 +553,12 @@ where
         let base_config = chart
             .accounting_base_config()
             .ok_or(ChartOfAccountsError::BaseConfigNotInitialized)?;
-        Ok(chart.account_sets_under_code(&base_config.assets_code))
-    }
-
-    #[instrument(
-        name = "core_accounting.chart_of_accounts.liability_account_sets",
-        skip(self)
-    )]
-    pub async fn liability_account_sets(
-        &self,
-        sub: &<<Perms as PermissionCheck>::Audit as AuditSvc>::Subject,
-        chart_ref: &str,
-    ) -> Result<Vec<AccountSetMember>, ChartOfAccountsError> {
-        self.authz
-            .enforce_permission(
-                sub,
-                CoreAccountingObject::all_charts(),
-                CoreAccountingAction::CHART_LIST,
-            )
-            .await?;
-        let chart = self.find_by_reference(chart_ref).await?;
-        let base_config = chart
-            .accounting_base_config()
-            .ok_or(ChartOfAccountsError::BaseConfigNotInitialized)?;
-        Ok(chart.account_sets_under_code(&base_config.liabilities_code))
-    }
-
-    #[instrument(
-        name = "core_accounting.chart_of_accounts.equity_account_sets",
-        skip(self)
-    )]
-    pub async fn equity_account_sets(
-        &self,
-        sub: &<<Perms as PermissionCheck>::Audit as AuditSvc>::Subject,
-        chart_ref: &str,
-    ) -> Result<Vec<AccountSetMember>, ChartOfAccountsError> {
-        self.authz
-            .enforce_permission(
-                sub,
-                CoreAccountingObject::all_charts(),
-                CoreAccountingAction::CHART_LIST,
-            )
-            .await?;
-        let chart = self.find_by_reference(chart_ref).await?;
-        let base_config = chart
-            .accounting_base_config()
-            .ok_or(ChartOfAccountsError::BaseConfigNotInitialized)?;
-        Ok(chart.account_sets_under_code(&base_config.equity_code))
-    }
-
-    #[instrument(
-        name = "core_accounting.chart_of_accounts.revenue_account_sets",
-        skip(self)
-    )]
-    pub async fn revenue_account_sets(
-        &self,
-        sub: &<<Perms as PermissionCheck>::Audit as AuditSvc>::Subject,
-        chart_ref: &str,
-    ) -> Result<Vec<AccountSetMember>, ChartOfAccountsError> {
-        self.authz
-            .enforce_permission(
-                sub,
-                CoreAccountingObject::all_charts(),
-                CoreAccountingAction::CHART_LIST,
-            )
-            .await?;
-        let chart = self.find_by_reference(chart_ref).await?;
-        let base_config = chart
-            .accounting_base_config()
-            .ok_or(ChartOfAccountsError::BaseConfigNotInitialized)?;
-        Ok(chart.account_sets_under_code(&base_config.revenue_code))
-    }
-
-    #[instrument(
-        name = "core_accounting.chart_of_accounts.cost_of_revenue_account_sets",
-        skip(self)
-    )]
-    pub async fn cost_of_revenue_account_sets(
-        &self,
-        sub: &<<Perms as PermissionCheck>::Audit as AuditSvc>::Subject,
-        chart_ref: &str,
-    ) -> Result<Vec<AccountSetMember>, ChartOfAccountsError> {
-        self.authz
-            .enforce_permission(
-                sub,
-                CoreAccountingObject::all_charts(),
-                CoreAccountingAction::CHART_LIST,
-            )
-            .await?;
-        let chart = self.find_by_reference(chart_ref).await?;
-        let base_config = chart
-            .accounting_base_config()
-            .ok_or(ChartOfAccountsError::BaseConfigNotInitialized)?;
-        Ok(chart.account_sets_under_code(&base_config.cost_of_revenue_code))
-    }
-
-    #[instrument(
-        name = "core_accounting.chart_of_accounts.expense_account_sets",
-        skip(self)
-    )]
-    pub async fn expense_account_sets(
-        &self,
-        sub: &<<Perms as PermissionCheck>::Audit as AuditSvc>::Subject,
-        chart_ref: &str,
-    ) -> Result<Vec<AccountSetMember>, ChartOfAccountsError> {
-        self.authz
-            .enforce_permission(
-                sub,
-                CoreAccountingObject::all_charts(),
-                CoreAccountingAction::CHART_LIST,
-            )
-            .await?;
-        let chart = self.find_by_reference(chart_ref).await?;
-        let base_config = chart
-            .accounting_base_config()
-            .ok_or(ChartOfAccountsError::BaseConfigNotInitialized)?;
-        Ok(chart.account_sets_under_code(&base_config.expenses_code))
+        let code = base_config
+            .code_for_category(category)
+            .ok_or(ChartOfAccountsError::InvalidAccountCategory {
+                code: "".parse().unwrap(),
+                category,
+            })?;
+        Ok(chart.account_sets_under_code(code))
     }
 }

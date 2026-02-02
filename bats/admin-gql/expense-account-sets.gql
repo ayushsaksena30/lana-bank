@@ -1,7 +1,0 @@
-query ExpenseAccountSets {
-  expenseAccountSets {
-    accountSetId
-    code
-    name
-  }
-}
