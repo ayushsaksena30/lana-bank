@@ -550,7 +550,9 @@ where
             )
             .await?;
         let chart = self.find_by_reference(chart_ref).await?;
-        let code = chart.code_for_category(category)?;
+        let code = chart
+            .code_for_category(category)
+            .ok_or(ChartOfAccountsError::AccountCategoryNotSupported(category))?;
         Ok(chart.account_sets_under_code(code))
     }
 }
