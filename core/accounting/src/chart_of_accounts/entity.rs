@@ -366,6 +366,19 @@ impl Chart {
             .unwrap_or_default()
     }
 
+    pub fn code_for_category(
+        &self,
+        category: AccountCategory,
+    ) -> Result<&AccountCode, ChartOfAccountsError> {
+        let base_config = self
+            .base_config
+            .as_ref()
+            .ok_or(ChartOfAccountsError::BaseConfigNotInitialized)?;
+        base_config
+            .code_for_category(category)
+            .ok_or(ChartOfAccountsError::AccountCategoryNotSupported(category))
+    }
+
     pub fn accounting_base_config(&self) -> Option<AccountingBaseConfig> {
         self.base_config.clone()
     }
