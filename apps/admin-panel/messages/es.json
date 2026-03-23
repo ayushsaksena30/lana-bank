@@ -2615,6 +2615,8 @@
     "title": "Crear partida manual",
     "description": "Crea una partida manual proporcionando los detalles requeridos",
     "fields": {
+      "template": "Plantilla de partida",
+      "noTemplate": "Sin plantilla - Rellenar manualmente",
       "description": "Descripción de la partida",
       "reference": "Referencia de la partida",
       "effective": "Fecha valor",
@@ -2625,6 +2627,7 @@
       "credit": "Crédito"
     },
     "placeholders": {
+      "selectTemplate": "Selecciona una plantilla para autocompletar...",
       "description": "Ingrese la descripción de la partida",
       "reference": "Ingrese la referencia de la partida",
       "effective": "Seleccionar fecha valor"

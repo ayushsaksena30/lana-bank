@@ -2615,6 +2615,8 @@
     "title": "Create Manual Transaction",
     "description": "Create a manual transaction by providing the required details",
     "fields": {
+      "template": "Transaction Template",
+      "noTemplate": "No template - Fill manually",
       "description": "Transaction Description",
       "reference": "Transaction Reference",
       "effective": "Effective Date",
@@ -2625,6 +2627,7 @@
       "credit": "Credit"
     },
     "placeholders": {
+      "selectTemplate": "Select a template to auto-fill...",
       "description": "Enter transaction description",
       "reference": "Enter transaction reference",
       "effective": "Select effective date"

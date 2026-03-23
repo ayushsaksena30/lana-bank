@@ -106,6 +106,55 @@ export type AccountingCsvDownloadLinkGeneratePayload = {
   link: AccountingCsvDownloadLink;
 };
 
+export type AccountingTemplate = {
+  __typename?: 'AccountingTemplate';
+  chartRef?: Maybe<Scalars['String']['output']>;
+  code: Scalars['String']['output'];
+  descriptionTemplate: Scalars['String']['output'];
+  entries: Array<AccountingTemplateEntry>;
+  id: Scalars['UUID']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type AccountingTemplateCreateInput = {
+  chartRef?: InputMaybe<Scalars['String']['input']>;
+  code: Scalars['String']['input'];
+  descriptionTemplate: Scalars['String']['input'];
+  entries: Array<AccountingTemplateEntryInput>;
+  name: Scalars['String']['input'];
+};
+
+export type AccountingTemplateCreatePayload = {
+  __typename?: 'AccountingTemplateCreatePayload';
+  accountingTemplate: AccountingTemplate;
+};
+
+export type AccountingTemplateEntry = {
+  __typename?: 'AccountingTemplateEntry';
+  accountIdOrCode: Scalars['String']['output'];
+  descriptionTemplate?: Maybe<Scalars['String']['output']>;
+  direction: DebitOrCredit;
+};
+
+export type AccountingTemplateEntryInput = {
+  accountIdOrCode: Scalars['String']['input'];
+  descriptionTemplate?: InputMaybe<Scalars['String']['input']>;
+  direction: DebitOrCredit;
+};
+
+export type AccountingTemplateUpdateInput = {
+  chartRef?: InputMaybe<Scalars['String']['input']>;
+  descriptionTemplate?: InputMaybe<Scalars['String']['input']>;
+  entries?: InputMaybe<Array<AccountingTemplateEntryInput>>;
+  id: Scalars['UUID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AccountingTemplateUpdatePayload = {
+  __typename?: 'AccountingTemplateUpdatePayload';
+  accountingTemplate: AccountingTemplate;
+};
+
 export enum Activity {
   Active = 'ACTIVE',
   Inactive = 'INACTIVE',
@@ -1838,6 +1887,8 @@ export type Me = {
 export type Mutation = {
   __typename?: 'Mutation';
   accountingCsvDownloadLinkGenerate: AccountingCsvDownloadLinkGeneratePayload;
+  accountingTemplateCreate: AccountingTemplateCreatePayload;
+  accountingTemplateUpdate: AccountingTemplateUpdatePayload;
   approvalProcessApprove: ApprovalProcessApprovePayload;
   approvalProcessDeny: ApprovalProcessDenyPayload;
   chartOfAccountsAddChildNode: ChartOfAccountsAddChildNodePayload;
@@ -1904,6 +1955,16 @@ export type Mutation = {
 
 export type MutationAccountingCsvDownloadLinkGenerateArgs = {
   input: AccountingCsvDownloadLinkGenerateInput;
+};
+
+
+export type MutationAccountingTemplateCreateArgs = {
+  input: AccountingTemplateCreateInput;
+};
+
+
+export type MutationAccountingTemplateUpdateArgs = {
+  input: AccountingTemplateUpdateInput;
 };
 
 
@@ -2485,6 +2546,8 @@ export type PublicIdTarget = CreditFacility | CreditFacilityDisbursal | Customer
 export type Query = {
   __typename?: 'Query';
   accountEntryCsv?: Maybe<AccountingCsvDocument>;
+  accountingTemplate?: Maybe<AccountingTemplate>;
+  accountingTemplates: Array<AccountingTemplate>;
   approvalProcess?: Maybe<ApprovalProcess>;
   approvalProcesses: ApprovalProcessConnection;
   audit: AuditEntryConnection;
@@ -2559,6 +2622,11 @@ export type Query = {
 
 export type QueryAccountEntryCsvArgs = {
   ledgerAccountId: Scalars['UUID']['input'];
+};
+
+
+export type QueryAccountingTemplateArgs = {
+  id: Scalars['UUID']['input'];
 };
 
 
@@ -4240,6 +4308,11 @@ export type ExecuteManualTransactionMutationVariables = Exact<{
 
 
 export type ExecuteManualTransactionMutation = { __typename?: 'Mutation', manualTransactionExecute: { __typename?: 'ManualTransactionExecutePayload', transaction: { __typename?: 'LedgerTransaction', id: string, ledgerTransactionId: string, createdAt: any, description?: string | null } } };
+
+export type AccountingTemplatesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AccountingTemplatesQuery = { __typename?: 'Query', accountingTemplates: Array<{ __typename?: 'AccountingTemplate', id: string, code: string, name: string, chartRef?: string | null, descriptionTemplate: string, entries: Array<{ __typename?: 'AccountingTemplateEntry', accountIdOrCode: string, direction: DebitOrCredit, descriptionTemplate?: string | null }> }> };
 
 export type JournalEntriesQueryVariables = Exact<{
   first: Scalars['Int']['input'];
@@ -9355,6 +9428,57 @@ export function useExecuteManualTransactionMutation(baseOptions?: Apollo.Mutatio
 export type ExecuteManualTransactionMutationHookResult = ReturnType<typeof useExecuteManualTransactionMutation>;
 export type ExecuteManualTransactionMutationResult = Apollo.MutationResult<ExecuteManualTransactionMutation>;
 export type ExecuteManualTransactionMutationOptions = Apollo.BaseMutationOptions<ExecuteManualTransactionMutation, ExecuteManualTransactionMutationVariables>;
+export const AccountingTemplatesDocument = gql`
+    query AccountingTemplates {
+  accountingTemplates {
+    id
+    code
+    name
+    chartRef
+    descriptionTemplate
+    entries {
+      accountIdOrCode
+      direction
+      descriptionTemplate
+    }
+  }
+}
+    `;
+
+/**
+ * __useAccountingTemplatesQuery__
+ *
+ * To run a query within a React component, call `useAccountingTemplatesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAccountingTemplatesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAccountingTemplatesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAccountingTemplatesQuery(baseOptions?: Apollo.QueryHookOptions<AccountingTemplatesQuery, AccountingTemplatesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<AccountingTemplatesQuery, AccountingTemplatesQueryVariables>(AccountingTemplatesDocument, options);
+      }
+export function useAccountingTemplatesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AccountingTemplatesQuery, AccountingTemplatesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<AccountingTemplatesQuery, AccountingTemplatesQueryVariables>(AccountingTemplatesDocument, options);
+        }
+// @ts-ignore
+export function useAccountingTemplatesSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<AccountingTemplatesQuery, AccountingTemplatesQueryVariables>): Apollo.UseSuspenseQueryResult<AccountingTemplatesQuery, AccountingTemplatesQueryVariables>;
+export function useAccountingTemplatesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<AccountingTemplatesQuery, AccountingTemplatesQueryVariables>): Apollo.UseSuspenseQueryResult<AccountingTemplatesQuery | undefined, AccountingTemplatesQueryVariables>;
+export function useAccountingTemplatesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<AccountingTemplatesQuery, AccountingTemplatesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<AccountingTemplatesQuery, AccountingTemplatesQueryVariables>(AccountingTemplatesDocument, options);
+        }
+export type AccountingTemplatesQueryHookResult = ReturnType<typeof useAccountingTemplatesQuery>;
+export type AccountingTemplatesLazyQueryHookResult = ReturnType<typeof useAccountingTemplatesLazyQuery>;
+export type AccountingTemplatesSuspenseQueryHookResult = ReturnType<typeof useAccountingTemplatesSuspenseQuery>;
+export type AccountingTemplatesQueryResult = Apollo.QueryResult<AccountingTemplatesQuery, AccountingTemplatesQueryVariables>;
 export const JournalEntriesDocument = gql`
     query JournalEntries($first: Int!, $after: String) {
   journalEntries(first: $first, after: $after) {

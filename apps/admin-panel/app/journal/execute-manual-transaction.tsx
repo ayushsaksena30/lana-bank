@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { toast } from "sonner"
 import { gql } from "@apollo/client"
 import { useTranslations } from "next-intl"
@@ -33,6 +33,7 @@ import {
   ManualTransactionEntryInput,
   ManualTransactionExecuteInput,
   useExecuteManualTransactionMutation,
+  useAccountingTemplatesQuery,
 } from "@/lib/graphql/generated"
 import { useModalNavigation } from "@/hooks/use-modal-navigation"
 import DataTable from "@/components/data-table"
@@ -46,6 +47,23 @@ gql`
         ledgerTransactionId
         createdAt
         description
+      }
+    }
+  }
+`
+
+gql`
+  query AccountingTemplates {
+    accountingTemplates {
+      id
+      code
+      name
+      chartRef
+      descriptionTemplate
+      entries {
+        accountIdOrCode
+        direction
+        descriptionTemplate
       }
     }
   }
@@ -81,6 +99,23 @@ export const ExecuteManualTransactionDialog: React.FC<ExecuteManualTransactionPr
     { loading, reset, error: executeManualTransactionError },
   ] = useExecuteManualTransactionMutation({})
 
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
+  
+  const { data: templatesData, loading: templatesLoading, error: templatesError } = useAccountingTemplatesQuery()
+
+  // Debug logging
+  useEffect(() => {
+    if (templatesError) {
+      console.error("❌ AccountingTemplates Query Error:", templatesError)
+    }
+    if (templatesLoading) {
+      console.log("⏳ AccountingTemplates loading...")
+    }
+    if (templatesData) {
+      console.log("✅ AccountingTemplates data:", templatesData)
+    }
+  }, [templatesData, templatesLoading, templatesError])
+
   const isLoading = loading || isNavigating
 
   const [formValues, setFormValues] = useState<ManualTransactionExecuteInput>({
@@ -90,6 +125,30 @@ export const ExecuteManualTransactionDialog: React.FC<ExecuteManualTransactionPr
     entries: [defaultEntry, defaultEntry],
   })
   const [error, setError] = useState<string | null>(null)
+
+  // Autofill form when template is selected
+  useEffect(() => {
+    if (selectedTemplateId && templatesData?.accountingTemplates) {
+      const template = templatesData.accountingTemplates.find(
+        (t) => t.id === selectedTemplateId
+      )
+      if (template) {
+        const newEntries = template.entries.map((entry) => ({
+          accountRef: entry.accountIdOrCode,
+          amount: 0,
+          currency: "USD" as const,
+          direction: entry.direction,
+          description: entry.descriptionTemplate || "",
+        }))
+
+        setFormValues((prevValues) => ({
+          ...prevValues,
+          description: template.descriptionTemplate,
+          entries: newEntries.length > 0 ? newEntries : [defaultEntry, defaultEntry],
+        }))
+      }
+    }
+  }, [selectedTemplateId, templatesData])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -173,6 +232,49 @@ export const ExecuteManualTransactionDialog: React.FC<ExecuteManualTransactionPr
           <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+          <div>
+            <Label htmlFor="template">{t("fields.template")}</Label>
+            <Select
+              value={selectedTemplateId || "none"}
+              onValueChange={(value) => {
+                if (value === "none") {
+                  setSelectedTemplateId(null)
+                } else {
+                  setSelectedTemplateId(value)
+                }
+              }}
+              disabled={templatesLoading}
+            >
+              <SelectTrigger id="template">
+                <SelectValue placeholder={t("placeholders.selectTemplate")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">
+                  {t("fields.noTemplate")}
+                </SelectItem>
+                {templatesLoading && (
+                  <div className="px-2 py-1 text-sm text-muted-foreground">
+                    Loading templates...
+                  </div>
+                )}
+                {templatesError && (
+                  <div className="px-2 py-1 text-sm text-destructive">
+                    Error loading templates: {templatesError.message}
+                  </div>
+                )}
+                {!templatesLoading && !templatesError && (!templatesData?.accountingTemplates || templatesData.accountingTemplates.length === 0) && (
+                  <div className="px-2 py-1 text-sm text-muted-foreground">
+                    No templates available
+                  </div>
+                )}
+                {templatesData?.accountingTemplates?.map((template) => (
+                  <SelectItem key={template.id} value={template.id}>
+                    {template.code} - {template.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div>
             <Label htmlFor="description">{t("fields.description")}</Label>
             <Input
