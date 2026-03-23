@@ -179,11 +179,7 @@ where
             )
             .await?;
 
-        Ok(self
-            .repo
-            .list_by_name(Default::default(), es_entity::ListDirection::Ascending)
-            .await?
-            .entities)
+        self.repo.list_all().await
     }
 
     pub async fn find_all(

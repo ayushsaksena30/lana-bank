@@ -24,4 +24,18 @@ impl TermsTemplateRepo {
             clock,
         }
     }
+
+    pub async fn list_all(&self) -> Result<Vec<TermsTemplate>, TermsTemplateError> {
+        let mut templates = Vec::new();
+        let mut next = Some(es_entity::PaginatedQueryArgs::default());
+
+        while let Some(query) = next.take() {
+            let mut ret = self.list_by_name(query, es_entity::ListDirection::Ascending).await?;
+
+            templates.append(&mut ret.entities);
+            next = ret.into_next_query();
+        }
+
+        Ok(templates)
+    }
 }
